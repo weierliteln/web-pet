@@ -9,12 +9,12 @@
     ? currentScript.src.replace(/[^/]*$/, '')
     : '';
 
-  // 配置：动画资源与对应文案（可根据需要自行修改）
+  // 配置：动画资源与对应文案
   const animations = {
-    idle: new URL('./舔手.gif', baseUrl).toString(),      // 默认待机
-    head: new URL('./惬意思考.gif', baseUrl).toString(),  // 点击头部
-    body: new URL('./大笑.gif', baseUrl).toString(),      // 点击身体
-    feet: new URL('./钻进钻出.gif', baseUrl).toString()   // 点击脚部
+    idle: new URL('./images/舔手.gif', baseUrl).toString(),      // 默认待机
+    head: new URL('./images/惬意思考.gif', baseUrl).toString(),  // 点击头部
+    body: new URL('./images/大笑.gif', baseUrl).toString(),      // 点击身体
+    feet: new URL('./images/钻进钻出.gif', baseUrl).toString()   // 点击脚部
   };
 
   const messages = {
@@ -34,7 +34,7 @@
         position: fixed;
         left: 40px;
         bottom: 40px;
-        width: 180px;
+        width:180px;
         height: auto;
         z-index: 999999;
         user-select: none;
@@ -46,6 +46,10 @@
         height: auto;
         cursor: grab;
         transition: transform 0.15s ease;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
       }
 
       #web-pet.web-pet-dragging {
@@ -62,12 +66,13 @@
         transition: opacity 0.25s ease;
       }
 
+      /* 对话框 */
       #web-pet-speech {
-        position: absolute;
-        left: 50%;
-        top: -42px;
-        transform: translateX(-50%);
-        max-width: 220px;
+        position: relative;
+        display: inline-block;
+        position: relative;
+        margin: 0 auto;
+        max-width: 85%;
         padding: 6px 10px;
         background: rgba(255, 255, 255, 0.95);
         border-radius: 16px;
@@ -76,7 +81,7 @@
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
         white-space: nowrap;
         text-overflow: ellipsis;
-        overflow: hidden;
+        // overflow: hidden;
         opacity: 0;
         pointer-events: none;
         transition: opacity 0.25s ease;
@@ -93,16 +98,43 @@
         border-color: rgba(255, 255, 255, 0.95) transparent transparent transparent;
       }
 
+      /* 关闭按钮 */
+      #web-pet-close {
+        position: absolute;
+        top: 80px;
+        right: 20px;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        border: none;
+        background: rgba(0,0,0,0.6);
+        color: #fff;
+        font-size: 14px;
+        line-height: 22px;
+        text-align: center;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+        transition: transform 0.15s ease, opacity 0.2s ease;
+        z-index: 1000000;
+        padding: 0;
+      }
+
+      #web-pet-close:hover {
+        transform: scale(1.05);
+        opacity: 0.9;
+      }
+
+      /* 设置点击区域 */
       .web-pet-hit-area {
         position: absolute;
         left: 0;
         right: 0;
-        cursor: pointer;
+        cursor: inherit;
         pointer-events: auto;
       }
 
       .web-pet-area-head {
-        top: 0;
+        top: 10%;
         height: 30%;
       }
 
@@ -131,6 +163,12 @@
     const pet = document.createElement('div');
     pet.id = 'web-pet';
 
+    const closeBtn = document.createElement('button');
+    closeBtn.id = 'web-pet-close';
+    closeBtn.type = 'button';
+    closeBtn.setAttribute('aria-label', '关闭桌宠');
+    closeBtn.textContent = '×';
+
     const speech = document.createElement('div');
     speech.id = 'web-pet-speech';
 
@@ -152,6 +190,7 @@
     feetArea.className = 'web-pet-hit-area web-pet-area-feet';
     feetArea.dataset.action = 'feet';
 
+    pet.appendChild(closeBtn);
     pet.appendChild(speech);
     pet.appendChild(img);
     pet.appendChild(headArea);
@@ -174,7 +213,7 @@
       }
 
       const text = messages[key];
-      if (!text || key === 'idle') {
+      if (!text) {
         speech.style.opacity = '0';
         return;
       }
@@ -182,9 +221,10 @@
       speech.textContent = text;
       speech.style.opacity = '1';
 
-      messageTimer = setTimeout(() => {
-        speech.style.opacity = '0';
-      }, holdMs);
+      // 自动隐藏气泡
+      // messageTimer = setTimeout(() => {
+      //   speech.style.opacity = '0';
+      // }, holdMs);
     }
 
     function switchAnimation(key, holdMs = 2500) {
@@ -231,10 +271,12 @@
     }
 
     let isDragging = false;
+    let hasMoved = false;
     let startX = 0;
     let startY = 0;
     let petStartX = 0;
     let petStartY = 0;
+    let suppressClick = false; // 拖动释放后短暂屏蔽点击
 
     function getEventPoint(e) {
       if (e.touches && e.touches[0]) {
@@ -247,8 +289,9 @@
       // 只响应左键或触摸
       if (e.type === 'mousedown' && e.button !== 0) return;
 
-      e.preventDefault();
+      // e.preventDefault();
       isDragging = true;
+      hasMoved = false;
       pet.classList.add('web-pet-dragging');
 
       const point = getEventPoint(e);
@@ -275,6 +318,9 @@
       const point = getEventPoint(e);
       const dx = point.x - startX;
       const dy = point.y - startY;
+      if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
+        hasMoved = true;
+      }
 
       let newX = petStartX + dx;
       let newY = petStartY + dy;
@@ -294,6 +340,11 @@
       if (!isDragging) return;
       isDragging = false;
       pet.classList.remove('web-pet-dragging');
+      if (hasMoved) {
+        suppressClick = true;
+        setTimeout(() => { suppressClick = false; }, 120);
+      }
+      hasMoved = false;
 
       const rect = container.getBoundingClientRect();
       try {
@@ -318,10 +369,18 @@
     // 点击区域触发行为
     [headArea, bodyArea, feetArea].forEach((area) => {
       area.addEventListener('click', (e) => {
-        e.stopPropagation();
+        // e.stopPropagation();
+        if (isDragging || suppressClick) return;
         const action = area.dataset.action;
         switchAnimation(action || 'idle');
       });
+
+    });
+
+    // 关闭
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      container.style.display = 'none';
     });
 
     // 初始为待机动画

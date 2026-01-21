@@ -38,6 +38,8 @@
         height: auto;
         z-index: 999999;
         user-select: none;
+        /* 为贴边半隐藏做准备 */
+        overflow: visible;
       }
 
       #web-pet {
@@ -64,6 +66,40 @@
         pointer-events: none;
         opacity: 1;
         transition: opacity 0.25s ease;
+      }
+
+      #web-pet-dock-side {
+        position: absolute;
+        width: 60px;
+        height: 60px;
+        background: #ffbf4f;
+        z-index: 1000000;
+        pointer-events: auto;
+        display: none;
+        border-radius: 50%;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      #web-pet-dock-side:hover {
+        transform: scale(1.06);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.26);
+      }
+
+      /* 收起时隐藏 web-pet，显示 web-pet-dock-side */
+      #web-pet-container.web-pet-docked-left #web-pet,
+      #web-pet-container.web-pet-docked-right #web-pet,
+      #web-pet-container.web-pet-docked-top #web-pet,
+      #web-pet-container.web-pet-docked-bottom #web-pet {
+        display: none;
+      }
+
+      #web-pet-container.web-pet-docked-left #web-pet-dock-side,
+      #web-pet-container.web-pet-docked-right #web-pet-dock-side,
+      #web-pet-container.web-pet-docked-top #web-pet-dock-side,
+      #web-pet-container.web-pet-docked-bottom #web-pet-dock-side {
+        display: block;
       }
 
       /* 对话框 */
@@ -147,6 +183,7 @@
         bottom: 0;
         height: 25%;
       }
+    
     `;
 
     document.head.appendChild(style);
@@ -176,6 +213,12 @@
     img.id = 'web-pet-img';
     img.alt = '网页宠物';
     img.src = animations.idle;
+
+    /* 贴边效果: left, top, right, bottom */
+    const dockSide = document.createElement('div');
+    dockSide.id = 'web-pet-dock-side';
+    container.appendChild(dockSide);
+
 
     // 点击区域
     const headArea = document.createElement('div');
@@ -277,6 +320,87 @@
     let petStartX = 0;
     let petStartY = 0;
     let suppressClick = false; // 拖动释放后短暂屏蔽点击
+    let dockedSide = null; // 当前是否处于某个方向的贴边收起
+
+    function clearDock() {
+      // 移除 dock 状态 class
+      container.classList.remove(
+        'web-pet-docked-left',
+        'web-pet-docked-right',
+        'web-pet-docked-top',
+        'web-pet-docked-bottom'
+      );
+      dockedSide = null;
+      // 展开时恢复溢出
+      container.style.overflow = 'visible';
+
+      // 展开宠物本体，隐藏半圆按钮位置重置
+      pet.style.display = 'flex';
+      dockSide.style.left = '';
+      dockSide.style.right = '';
+      dockSide.style.top = '';
+      dockSide.style.bottom = '';
+    }
+
+    /* 贴边收起：隐藏宠物，仅显示半圆按钮 */
+    function applyDock(side) {
+      clearDock();
+      dockedSide = side;
+
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const rect = container.getBoundingClientRect();
+
+      const btnSize = 60;
+      const btnRadius = btnSize / 2;
+
+      // 宠物本体隐藏，由半圆按钮替代
+      pet.style.display = 'none';
+
+      // 基于当前矩形，先把容器对齐到边，然后把圆按钮“探出”一半
+      if (side === 'left') {
+        container.style.left = '0px';
+        container.style.top = rect.top + 'px';
+        container.style.bottom = 'auto';
+
+        dockSide.style.left = -btnRadius + 'px';
+        dockSide.style.right = '';
+        dockSide.style.top = (rect.height / 2 - btnRadius) + 'px';
+        dockSide.style.bottom = '';
+      } else if (side === 'right') {
+        container.style.left = (vw - rect.width) + 'px';
+        container.style.top = rect.top + 'px';
+        container.style.bottom = 'auto';
+
+        dockSide.style.left = '';
+        dockSide.style.right = -btnRadius + 'px';
+        dockSide.style.top = (rect.height / 2 - btnRadius) + 'px';
+        dockSide.style.bottom = '';
+      } else if (side === 'top') {
+        container.style.left = rect.left + 'px';
+        container.style.top = '0px';
+        container.style.bottom = 'auto';
+
+        dockSide.style.left = (rect.width / 2 - btnRadius) + 'px';
+        dockSide.style.right = '';
+        dockSide.style.top = -btnRadius + 'px';
+        dockSide.style.bottom = '';
+      } else if (side === 'bottom') {
+        container.style.left = rect.left + 'px';
+        container.style.top = (vh - rect.height) + 'px';
+        container.style.bottom = 'auto';
+
+        dockSide.style.left = (rect.width / 2 - btnRadius) + 'px';
+        dockSide.style.right = '';
+        dockSide.style.top = '';
+        dockSide.style.bottom = -btnRadius + 'px';
+      }
+
+      // 添加标记 class，触发 CSS：隐藏宠物、显示半圆
+      container.style.bottom = 'auto';
+      container.classList.add('web-pet-docked-' + side);
+      container.style.overflow = 'visible';
+    }
 
     function getEventPoint(e) {
       if (e.touches && e.touches[0]) {
@@ -290,6 +414,9 @@
       if (e.type === 'mousedown' && e.button !== 0) return;
 
       // e.preventDefault();
+      // 开始拖拽时，如果是收起状态，则先展开
+      clearDock();
+
       isDragging = true;
       hasMoved = false;
       pet.classList.add('web-pet-dragging');
@@ -347,10 +474,34 @@
       hasMoved = false;
 
       const rect = container.getBoundingClientRect();
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      // 计算距离四个边缘的距离，决定是否收起以及朝向
+      const distances = {
+        left: rect.left,
+        right: vw - (rect.left + rect.width),
+        top: rect.top,
+        bottom: vh - (rect.top + rect.height)
+      };
+
+      const nearestSide = Object.keys(distances).reduce((prev, cur) =>
+        distances[cur] < distances[prev] ? cur : prev
+      );
+
+      const threshold = 0; // 距离屏幕边缘小于该值则触发收起
+      if (distances[nearestSide] <= threshold) {
+        applyDock(nearestSide);
+      } else {
+        clearDock();
+      }
+
+      // 收起/展开后再读取最新位置进行持久化
+      const finalRect = container.getBoundingClientRect();
       try {
         localStorage.setItem(
           'web_pet_position',
-          JSON.stringify({ x: rect.left, y: rect.top })
+          JSON.stringify({ x: finalRect.left, y: finalRect.top })
         );
       } catch (_) {
         // 忽略存储失败
@@ -365,6 +516,11 @@
     // 拖动事件（在整个宠物区域上）
     pet.addEventListener('mousedown', onDown);
     pet.addEventListener('touchstart', onDown, { passive: false });
+
+    // 点击半圆按钮，重新展开宠物
+    dockSide.addEventListener('click', () => {
+      clearDock();
+    });
 
     // 点击区域触发行为
     [headArea, bodyArea, feetArea].forEach((area) => {

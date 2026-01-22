@@ -10,19 +10,32 @@
     : '';
 
   // 配置：动画资源与对应文案
-  const animations = {
-    idle: new URL('./images/舔手.gif', baseUrl).toString(),      // 默认待机
-    head: new URL('./images/惬意思考.gif', baseUrl).toString(),  // 点击头部
-    body: new URL('./images/大笑.gif', baseUrl).toString(),      // 点击身体
-    feet: new URL('./images/钻进钻出.gif', baseUrl).toString()   // 点击脚部
-  };
-
-  const messages = {
-    idle: '今天也要元气满满呀~',
-    head: '嘿嘿，被你摸头了~',
-    body: '笑死我啦！',
-    feet: '脚脚好痒，不要乱踩啦~'
-  };
+  const animations = [
+    {
+      key: 'idle',
+      gif: new URL('./images/待机.gif', baseUrl).toString(),
+      message: '嗨，有问题问我！👋',
+      audio: new URL('./audio/待机_1.mp3', baseUrl).toString(),
+    },
+    {
+      key: 'byOk',
+      gif: new URL('./images/比OK.gif', baseUrl).toString(),
+      message: '好呀，给你比个OK~',
+      audio: new URL('./audio/比OK_1.mp3', baseUrl).toString(),
+    },
+    {
+      key: 'funny',
+      gif: new URL('./images/搞怪.gif', baseUrl).toString(),
+      message: '哈哈哈，你真有趣~',
+      audio: new URL('./audio/搞怪_1.mp3', baseUrl).toString(),
+    },
+    {
+      key: 'clap',
+      gif: new URL('./images/鼓掌.gif', baseUrl).toString(),
+      message: '掌声响起来~',
+      audio: new URL('./audio/鼓掌_1.mp3', baseUrl).toString(),
+    }
+  ] 
 
   function injectStyle() {
     if (document.getElementById('web-pet-style')) return;
@@ -38,8 +51,6 @@
         height: auto;
         z-index: 999999;
         user-select: none;
-        /* 为贴边半隐藏做准备 */
-        overflow: visible;
       }
 
       #web-pet {
@@ -65,41 +76,35 @@
         display: block;
         pointer-events: none;
         opacity: 1;
-        transition: opacity 0.25s ease;
       }
 
       #web-pet-dock-side {
         position: absolute;
-        width: 60px;
-        height: 60px;
-        background: #ffbf4f;
+        top: 0;
+        left: 0;
+        width: 10px;
+        height: 10px;
+        background: rgba(0,0,0,0.5);
         z-index: 1000000;
-        pointer-events: auto;
-        display: none;
-        border-radius: 50%;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
-        cursor: pointer;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.25s ease;
       }
 
-      #web-pet-dock-side:hover {
-        transform: scale(1.06);
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.26);
+      #web-pet-dock-side.web-pet-dock-left {
+        left: 0;
       }
 
-      /* 收起时隐藏 web-pet，显示 web-pet-dock-side */
-      #web-pet-container.web-pet-docked-left #web-pet,
-      #web-pet-container.web-pet-docked-right #web-pet,
-      #web-pet-container.web-pet-docked-top #web-pet,
-      #web-pet-container.web-pet-docked-bottom #web-pet {
-        display: none;
+      #web-pet-dock-side.web-pet-dock-top {
+        top: 0;
       }
 
-      #web-pet-container.web-pet-docked-left #web-pet-dock-side,
-      #web-pet-container.web-pet-docked-right #web-pet-dock-side,
-      #web-pet-container.web-pet-docked-top #web-pet-dock-side,
-      #web-pet-container.web-pet-docked-bottom #web-pet-dock-side {
-        display: block;
+      #web-pet-dock-side.web-pet-dock-right {
+        right: 0;
+      }
+
+      #web-pet-dock-side.web-pet-dock-bottom {
+        bottom: 0;
       }
 
       /* 对话框 */
@@ -160,30 +165,7 @@
         opacity: 0.9;
       }
 
-      /* 设置点击区域 */
-      .web-pet-hit-area {
-        position: absolute;
-        left: 0;
-        right: 0;
-        cursor: inherit;
-        pointer-events: auto;
-      }
-
-      .web-pet-area-head {
-        top: 10%;
-        height: 30%;
-      }
-
-      .web-pet-area-body {
-        top: 30%;
-        height: 45%;
-      }
-
-      .web-pet-area-feet {
-        bottom: 0;
-        height: 25%;
-      }
-    
+      
     `;
 
     document.head.appendChild(style);
@@ -212,33 +194,18 @@
     const img = document.createElement('img');
     img.id = 'web-pet-img';
     img.alt = '网页宠物';
-    img.src = animations.idle;
+    const idleAnim = animations.find(a => a.key === 'idle');
+    img.src = idleAnim ? idleAnim.gif : '';
 
     /* 贴边效果: left, top, right, bottom */
     const dockSide = document.createElement('div');
     dockSide.id = 'web-pet-dock-side';
+    dockSide.textContent = '贴边效果';
     container.appendChild(dockSide);
-
-
-    // 点击区域
-    const headArea = document.createElement('div');
-    headArea.className = 'web-pet-hit-area web-pet-area-head';
-    headArea.dataset.action = 'head';
-
-    const bodyArea = document.createElement('div');
-    bodyArea.className = 'web-pet-hit-area web-pet-area-body';
-    bodyArea.dataset.action = 'body';
-
-    const feetArea = document.createElement('div');
-    feetArea.className = 'web-pet-hit-area web-pet-area-feet';
-    feetArea.dataset.action = 'feet';
 
     pet.appendChild(closeBtn);
     pet.appendChild(speech);
     pet.appendChild(img);
-    pet.appendChild(headArea);
-    pet.appendChild(bodyArea);
-    pet.appendChild(feetArea);
 
     container.appendChild(pet);
     document.body.appendChild(container);
@@ -247,7 +214,7 @@
     let restoreTimer = null;
     let messageTimer = null;
 
-    function showMessage(key, holdMs) {
+    function showMessage(text, holdMs) {
       if (!speech) return;
 
       if (messageTimer) {
@@ -255,7 +222,6 @@
         messageTimer = null;
       }
 
-      const text = messages[key];
       if (!text) {
         speech.style.opacity = '0';
         return;
@@ -271,27 +237,29 @@
     }
 
     function switchAnimation(key, holdMs = 2500) {
-      if (!animations[key]) return;
+      const anim = animations.find(a => a.key === key);
+      if (!anim) return;
 
       // 如果正在播放相同动画，刷新持续时间与对话
       if (currentState === key) {
         if (restoreTimer) clearTimeout(restoreTimer);
         restoreTimer = setTimeout(() => switchAnimation('idle', 0), holdMs);
-        showMessage(key, holdMs);
+        showMessage(anim.message, holdMs);
         return;
       }
 
       currentState = key;
-      img.style.opacity = '0';
+      img.src = anim.gif;
 
-      setTimeout(() => {
-        img.src = animations[key];
-        img.onload = () => {
-          img.style.opacity = '1';
-        };
-      }, 160);
+      showMessage(anim.message, holdMs);
 
-      showMessage(key, holdMs);
+      // 播放音频
+      if (anim.audio) {
+        const audio = new Audio(anim.audio);
+        audio.play().catch(() => {
+          // 忽略音频播放错误
+        });
+      }
 
       if (key !== 'idle') {
         if (restoreTimer) clearTimeout(restoreTimer);
@@ -300,6 +268,19 @@
         }, holdMs);
       }
     }
+
+    // 随机播放动画
+    function playRandomAnimation() {
+      // 排除 idle 状态，只从其他动画中随机选择
+      const availableAnimations = animations.filter(a => a.key !== 'idle');
+      if (availableAnimations.length === 0) return;
+      
+      const randomIndex = Math.floor(Math.random() * availableAnimations.length);
+      const randomAnim = availableAnimations[randomIndex];
+      switchAnimation(randomAnim.key, 2500);
+    }
+
+    
 
     // 位置恢复
     try {
@@ -320,87 +301,6 @@
     let petStartX = 0;
     let petStartY = 0;
     let suppressClick = false; // 拖动释放后短暂屏蔽点击
-    let dockedSide = null; // 当前是否处于某个方向的贴边收起
-
-    function clearDock() {
-      // 移除 dock 状态 class
-      container.classList.remove(
-        'web-pet-docked-left',
-        'web-pet-docked-right',
-        'web-pet-docked-top',
-        'web-pet-docked-bottom'
-      );
-      dockedSide = null;
-      // 展开时恢复溢出
-      container.style.overflow = 'visible';
-
-      // 展开宠物本体，隐藏半圆按钮位置重置
-      pet.style.display = 'flex';
-      dockSide.style.left = '';
-      dockSide.style.right = '';
-      dockSide.style.top = '';
-      dockSide.style.bottom = '';
-    }
-
-    /* 贴边收起：隐藏宠物，仅显示半圆按钮 */
-    function applyDock(side) {
-      clearDock();
-      dockedSide = side;
-
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
-      const rect = container.getBoundingClientRect();
-
-      const btnSize = 60;
-      const btnRadius = btnSize / 2;
-
-      // 宠物本体隐藏，由半圆按钮替代
-      pet.style.display = 'none';
-
-      // 基于当前矩形，先把容器对齐到边，然后把圆按钮“探出”一半
-      if (side === 'left') {
-        container.style.left = '0px';
-        container.style.top = rect.top + 'px';
-        container.style.bottom = 'auto';
-
-        dockSide.style.left = -btnRadius + 'px';
-        dockSide.style.right = '';
-        dockSide.style.top = (rect.height / 2 - btnRadius) + 'px';
-        dockSide.style.bottom = '';
-      } else if (side === 'right') {
-        container.style.left = (vw - rect.width) + 'px';
-        container.style.top = rect.top + 'px';
-        container.style.bottom = 'auto';
-
-        dockSide.style.left = '';
-        dockSide.style.right = -btnRadius + 'px';
-        dockSide.style.top = (rect.height / 2 - btnRadius) + 'px';
-        dockSide.style.bottom = '';
-      } else if (side === 'top') {
-        container.style.left = rect.left + 'px';
-        container.style.top = '0px';
-        container.style.bottom = 'auto';
-
-        dockSide.style.left = (rect.width / 2 - btnRadius) + 'px';
-        dockSide.style.right = '';
-        dockSide.style.top = -btnRadius + 'px';
-        dockSide.style.bottom = '';
-      } else if (side === 'bottom') {
-        container.style.left = rect.left + 'px';
-        container.style.top = (vh - rect.height) + 'px';
-        container.style.bottom = 'auto';
-
-        dockSide.style.left = (rect.width / 2 - btnRadius) + 'px';
-        dockSide.style.right = '';
-        dockSide.style.top = '';
-        dockSide.style.bottom = -btnRadius + 'px';
-      }
-
-      // 添加标记 class，触发 CSS：隐藏宠物、显示半圆
-      container.style.bottom = 'auto';
-      container.classList.add('web-pet-docked-' + side);
-      container.style.overflow = 'visible';
-    }
 
     function getEventPoint(e) {
       if (e.touches && e.touches[0]) {
@@ -414,9 +314,6 @@
       if (e.type === 'mousedown' && e.button !== 0) return;
 
       // e.preventDefault();
-      // 开始拖拽时，如果是收起状态，则先展开
-      clearDock();
-
       isDragging = true;
       hasMoved = false;
       pet.classList.add('web-pet-dragging');
@@ -461,6 +358,26 @@
 
       container.style.left = newX + 'px';
       container.style.top = newY + 'px';
+
+      // 贴边效果
+      if(newX === 0) {
+        console.log('left');
+        dockSide.classList.add('web-pet-dock-left');
+      } 
+      else if(newY === 0) {
+        console.log('top');
+        dockSide.classList.add('web-pet-dock-top');
+      }
+      else if(newX === vw - rect.width) {
+        console.log('right');
+        dockSide.classList.add('web-pet-dock-right');
+      }
+      else if(newY === vh - rect.height) {
+        console.log('bottom');
+        dockSide.classList.add('web-pet-dock-bottom');
+      }
+
+
     }
 
     function onUp() {
@@ -474,34 +391,10 @@
       hasMoved = false;
 
       const rect = container.getBoundingClientRect();
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
-
-      // 计算距离四个边缘的距离，决定是否收起以及朝向
-      const distances = {
-        left: rect.left,
-        right: vw - (rect.left + rect.width),
-        top: rect.top,
-        bottom: vh - (rect.top + rect.height)
-      };
-
-      const nearestSide = Object.keys(distances).reduce((prev, cur) =>
-        distances[cur] < distances[prev] ? cur : prev
-      );
-
-      const threshold = 0; // 距离屏幕边缘小于该值则触发收起
-      if (distances[nearestSide] <= threshold) {
-        applyDock(nearestSide);
-      } else {
-        clearDock();
-      }
-
-      // 收起/展开后再读取最新位置进行持久化
-      const finalRect = container.getBoundingClientRect();
       try {
         localStorage.setItem(
           'web_pet_position',
-          JSON.stringify({ x: finalRect.left, y: finalRect.top })
+          JSON.stringify({ x: rect.left, y: rect.top })
         );
       } catch (_) {
         // 忽略存储失败
@@ -517,20 +410,15 @@
     pet.addEventListener('mousedown', onDown);
     pet.addEventListener('touchstart', onDown, { passive: false });
 
-    // 点击半圆按钮，重新展开宠物
-    dockSide.addEventListener('click', () => {
-      clearDock();
-    });
-
-    // 点击区域触发行为
-    [headArea, bodyArea, feetArea].forEach((area) => {
-      area.addEventListener('click', (e) => {
-        // e.stopPropagation();
-        if (isDragging || suppressClick) return;
-        const action = area.dataset.action;
-        switchAnimation(action || 'idle');
-      });
-
+    // 点击事件：随机播放动画
+    pet.addEventListener('click', (e) => {
+      // 如果刚刚拖动过，不触发点击
+      if (suppressClick) return;
+      // 如果点击的是关闭按钮，不触发
+      if (e.target === closeBtn) return;
+      
+      e.stopPropagation();
+      playRandomAnimation();
     });
 
     // 关闭

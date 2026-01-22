@@ -168,8 +168,8 @@
 
       /* 吸附状态：隐藏 pet 元素，显示圆球 */
       #web-pet-container.web-pet-docked {
-        width: 70px !important;
-        height: 70px !important;
+        width: 140px;
+        height: 70px;
       }
 
       #web-pet-container.web-pet-docked #web-pet {
@@ -180,15 +180,15 @@
         display: flex;
       }
 
-      /* 圆球容器 */
+      /* 胶囊容器 */
       #web-pet-dock-circle {
         display: none;
-        width: 70px;
+        width: 140px;
         height: 70px;
         background: #5666e6;
-        border-radius: 50%;
+        border-radius: 44px;
         align-items: center;
-        justify-content: center;
+        justify-content: start;
         box-sizing: border-box;
         cursor: grab;
         transition: transform 0.15s ease;
@@ -199,11 +199,23 @@
         transform: scale(1.1);
       }
 
+      /* 内层白色圆形容器 */
+      #web-pet-dock-inner {
+        width: 70px;
+        height: 70px;
+        background: #fff;
+        border-radius: 50%;
+        border: 4px solid #5666e6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+      }
+
       /* 圆球内的图片 */
       #web-pet-dock-img {
         width: 54px;
         height: 54px;
-        border-radius: 50%;
         display: block;
         object-fit: cover;
       }
@@ -250,11 +262,14 @@
     /* 吸附时的圆球 */
     const dockCircle = document.createElement('div');
     dockCircle.id = 'web-pet-dock-circle';
+    const dockInner = document.createElement('div');
+    dockInner.id = 'web-pet-dock-inner';
     const dockImg = document.createElement('img');
     dockImg.id = 'web-pet-dock-img';
     dockImg.src = staticImg;
     dockImg.alt = '静止淼淼';
-    dockCircle.appendChild(dockImg);
+    dockInner.appendChild(dockImg);
+    dockCircle.appendChild(dockInner);
     container.appendChild(dockCircle);
 
     pet.appendChild(closeBtn);
@@ -366,6 +381,20 @@
     let isDocked = false; // 是否已吸附到边缘
     let dockedSide = null; // 吸附到哪一边：'left', 'top', 'right', 'bottom'
 
+    //修改不同位置胶囊的旋转以及里面图片位置和旋转
+    function updateDockRotation(side) {
+      const rotation = {
+        left: 0,
+        top: 90,
+        right: 0,
+        bottom: 90,
+      };
+      dockCircle.style.transform = `rotate(${rotation[side]}deg)`;
+      dockCircle.style.justifyContent = side === 'left' ? 'flex-end' : side === 'right' ? 'flex-start' : side === 'top' ? 'flex-end' : 'flex-start';
+      dockInner.style.transform = `rotate(-${rotation[side]}deg)`;
+    }
+
+
     function getEventPoint(e) {
       if (e.touches && e.touches[0]) {
         return { x: e.touches[0].clientX, y: e.touches[0].clientY };
@@ -441,12 +470,16 @@
       const b = container.getBoundingClientRect();
       if (b.left < MARGINS) {
         dockSide.classList.add('web-pet-dock-left');
+        updateDockRotation('left');
       } else if (b.top < MARGINS) {
         dockSide.classList.add('web-pet-dock-top');
+        updateDockRotation('top');
       } else if (b.right > rightScreenEdge) {
         dockSide.classList.add('web-pet-dock-right');
+        updateDockRotation('right');
       } else if (b.bottom > bottomScreenEdge) {
         dockSide.classList.add('web-pet-dock-bottom');
+        updateDockRotation('bottom');
       }
     }
 
@@ -483,17 +516,17 @@
         // 吸附到上边
         shouldDock = true;
         newDockedSide = 'top';
-        finalY = 0;
+        finalY = 40;
       } else if (b.right > rightScreenEdge) {
         // 吸附到右边
         shouldDock = true;
         newDockedSide = 'right';
-        finalX = vw - 70;
+        finalX = vw - 140;
       } else if (b.bottom > bottomScreenEdge) {
         // 吸附到下边
         shouldDock = true;
         newDockedSide = 'bottom';
-        finalY = vh - 70;
+        finalY = vh - 110;
       }
 
       // 执行吸附或取消吸附

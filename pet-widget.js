@@ -166,6 +166,48 @@
         opacity: 0.9;
       }
 
+      /* 吸附状态：隐藏 pet 元素，显示圆球 */
+      #web-pet-container.web-pet-docked {
+        width: 70px !important;
+        height: 70px !important;
+      }
+
+      #web-pet-container.web-pet-docked #web-pet {
+        display: none;
+      }
+
+      #web-pet-container.web-pet-docked #web-pet-dock-circle {
+        display: flex;
+      }
+
+      /* 圆球容器 */
+      #web-pet-dock-circle {
+        display: none;
+        width: 70px;
+        height: 70px;
+        background: #5666e6;
+        border-radius: 50%;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        cursor: grab;
+        transition: transform 0.15s ease;
+      }
+
+      #web-pet-dock-circle.web-pet-dragging {
+        cursor: grabbing;
+        transform: scale(1.1);
+      }
+
+      /* 圆球内的图片 */
+      #web-pet-dock-img {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        display: block;
+        object-fit: cover;
+      }
+
       
     `;
 
@@ -204,6 +246,16 @@
     dockSide.id = 'web-pet-dock-side';
     dockSide.textContent = '贴边效果';
     container.appendChild(dockSide);
+
+    /* 吸附时的圆球 */
+    const dockCircle = document.createElement('div');
+    dockCircle.id = 'web-pet-dock-circle';
+    const dockImg = document.createElement('img');
+    dockImg.id = 'web-pet-dock-img';
+    dockImg.src = staticImg;
+    dockImg.alt = '静止淼淼';
+    dockCircle.appendChild(dockImg);
+    container.appendChild(dockCircle);
 
     pet.appendChild(closeBtn);
     pet.appendChild(speech);
@@ -283,17 +335,27 @@
     
 
     // 位置恢复
-    try {
-      const savedPos = JSON.parse(localStorage.getItem('web_pet_position') || 'null');
-      if (savedPos && typeof savedPos.x === 'number' && typeof savedPos.y === 'number') {
-        container.style.left = savedPos.x + 'px';
-        container.style.top = savedPos.y + 'px';
-        container.style.bottom = 'auto';
-      }
-    } catch (_) {
-      // localStorage 失败时忽略
-    }
+    // try {
+    //   const savedPos = JSON.parse(localStorage.getItem('web_pet_position') || 'null');
+    //   if (savedPos && typeof savedPos.x === 'number' && typeof savedPos.y === 'number') {
+    //     container.style.left = savedPos.x + 'px';
+    //     container.style.top = savedPos.y + 'px';
+    //     container.style.bottom = 'auto';
+        
+    //     // 恢复吸附状态
+    //     if (savedPos.docked && savedPos.dockedSide) {
+    //       isDocked = true;
+    //       dockedSide = savedPos.dockedSide;
+    //       container.classList.add('web-pet-docked');
+    //     }
+    //   }
+    // } catch (_) {
+    //   // localStorage 失败时忽略
+    // }
 
+    // 吸附阈值（参考 pet.html）
+    const MARGINS = 4;
+    
     let isDragging = false;
     let hasMoved = false;
     let startX = 0;
@@ -301,6 +363,8 @@
     let petStartX = 0;
     let petStartY = 0;
     let suppressClick = false; // 拖动释放后短暂屏蔽点击
+    let isDocked = false; // 是否已吸附到边缘
+    let dockedSide = null; // 吸附到哪一边：'left', 'top', 'right', 'bottom'
 
     function getEventPoint(e) {
       if (e.touches && e.touches[0]) {
@@ -317,6 +381,14 @@
       isDragging = true;
       hasMoved = false;
       pet.classList.add('web-pet-dragging');
+      dockCircle.classList.add('web-pet-dragging');
+
+      // 如果从吸附状态开始拖拽，先取消吸附
+      if (isDocked) {
+        isDocked = false;
+        dockedSide = null;
+        container.classList.remove('web-pet-docked');
+      }
 
       const point = getEventPoint(e);
       startX = point.x;
@@ -352,38 +424,37 @@
       const vw = window.innerWidth;
       const vh = window.innerHeight;
       const rect = container.getBoundingClientRect();
+      const rightScreenEdge = vw - MARGINS;
+      const bottomScreenEdge = vh - MARGINS;
 
+      // 限制在边界内（不再保持吸附状态，因为已经在 onDown 中取消了）
       newX = Math.min(Math.max(newX, 0), vw - rect.width);
       newY = Math.min(Math.max(newY, 0), vh - rect.height);
 
       container.style.left = newX + 'px';
       container.style.top = newY + 'px';
 
-      // 贴边效果
-      if(newX === 0) {
-        console.log('left');
+      // 清除之前的贴边标记
+      dockSide.classList.remove('web-pet-dock-left', 'web-pet-dock-top', 'web-pet-dock-right', 'web-pet-dock-bottom');
+
+      // 检测是否接近边缘（用于预览，但不立即吸附）
+      const b = container.getBoundingClientRect();
+      if (b.left < MARGINS) {
         dockSide.classList.add('web-pet-dock-left');
-      } 
-      else if(newY === 0) {
-        console.log('top');
+      } else if (b.top < MARGINS) {
         dockSide.classList.add('web-pet-dock-top');
-      }
-      else if(newX === vw - rect.width) {
-        console.log('right');
+      } else if (b.right > rightScreenEdge) {
         dockSide.classList.add('web-pet-dock-right');
-      }
-      else if(newY === vh - rect.height) {
-        console.log('bottom');
+      } else if (b.bottom > bottomScreenEdge) {
         dockSide.classList.add('web-pet-dock-bottom');
       }
-
-
     }
 
     function onUp() {
       if (!isDragging) return;
       isDragging = false;
       pet.classList.remove('web-pet-dragging');
+      dockCircle.classList.remove('web-pet-dragging');
       if (hasMoved) {
         suppressClick = true;
         setTimeout(() => { suppressClick = false; }, 120);
@@ -391,11 +462,72 @@
       hasMoved = false;
 
       const rect = container.getBoundingClientRect();
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const rightScreenEdge = vw - MARGINS;
+      const bottomScreenEdge = vh - MARGINS;
+      const b = container.getBoundingClientRect();
+
+      // 检测是否应该吸附（参考 pet.html 的逻辑）
+      let shouldDock = false;
+      let newDockedSide = null;
+      let finalX = rect.left;
+      let finalY = rect.top;
+
+      if (b.left < MARGINS) {
+        // 吸附到左边
+        shouldDock = true;
+        newDockedSide = 'left';
+        finalX = 0;
+      } else if (b.top < MARGINS) {
+        // 吸附到上边
+        shouldDock = true;
+        newDockedSide = 'top';
+        finalY = 0;
+      } else if (b.right > rightScreenEdge) {
+        // 吸附到右边
+        shouldDock = true;
+        newDockedSide = 'right';
+        finalX = vw - 70;
+      } else if (b.bottom > bottomScreenEdge) {
+        // 吸附到下边
+        shouldDock = true;
+        newDockedSide = 'bottom';
+        finalY = vh - 70;
+      }
+
+      // 执行吸附或取消吸附
+      if (shouldDock) {
+        // 执行吸附
+        container.style.left = finalX + 'px';
+        container.style.top = finalY + 'px';
+        isDocked = true;
+        dockedSide = newDockedSide;
+        container.classList.add('web-pet-docked');
+      } else {
+        // 取消吸附
+        if (isDocked) {
+          isDocked = false;
+          dockedSide = null;
+          container.classList.remove('web-pet-docked');
+        }
+      }
+
+      // 清除贴边标记
+      dockSide.classList.remove('web-pet-dock-left', 'web-pet-dock-top', 'web-pet-dock-right', 'web-pet-dock-bottom');
+
+      // 保存位置
+      const finalRect = container.getBoundingClientRect();
       try {
-        localStorage.setItem(
-          'web_pet_position',
-          JSON.stringify({ x: rect.left, y: rect.top })
-        );
+        // localStorage.setItem(
+        //   'web_pet_position',
+        //   JSON.stringify({ 
+        //     x: finalRect.left, 
+        //     y: finalRect.top,
+        //     docked: isDocked,
+        //     dockedSide: dockedSide
+        //   })
+        // );
       } catch (_) {
         // 忽略存储失败
       }
@@ -406,9 +538,11 @@
       window.removeEventListener('touchend', onUp);
     }
 
-    // 拖动事件（在整个宠物区域上）
+    // 拖动事件（在整个宠物区域和圆球上）
     pet.addEventListener('mousedown', onDown);
     pet.addEventListener('touchstart', onDown, { passive: false });
+    dockCircle.addEventListener('mousedown', onDown);
+    dockCircle.addEventListener('touchstart', onDown, { passive: false });
 
     // 点击事件：随机播放动画
     pet.addEventListener('click', (e) => {

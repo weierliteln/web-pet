@@ -10,6 +10,7 @@
     : '';
 
   // 配置：动画资源与对应文案
+  const staticImg = new URL('./images/静止.jpg', baseUrl).toString();
   const animations = [
     {
       key: 'idle',
@@ -194,6 +195,7 @@
     const img = document.createElement('img');
     img.id = 'web-pet-img';
     img.alt = '网页宠物';
+  
     const idleAnim = animations.find(a => a.key === 'idle');
     img.src = idleAnim ? idleAnim.gif : '';
 
@@ -213,6 +215,7 @@
     let currentState = 'idle';
     let restoreTimer = null;
     let messageTimer = null;
+    let autoSwitchTimer = null;
 
     function showMessage(text, holdMs) {
       if (!speech) return;
@@ -236,17 +239,9 @@
       // }, holdMs);
     }
 
-    function switchAnimation(key, holdMs = 2500) {
+    function switchAnimation(key, holdMs = 5000) {
       const anim = animations.find(a => a.key === key);
       if (!anim) return;
-
-      // 如果正在播放相同动画，刷新持续时间与对话
-      if (currentState === key) {
-        if (restoreTimer) clearTimeout(restoreTimer);
-        restoreTimer = setTimeout(() => switchAnimation('idle', 0), holdMs);
-        showMessage(anim.message, holdMs);
-        return;
-      }
 
       currentState = key;
       img.src = anim.gif;
@@ -254,32 +249,37 @@
       showMessage(anim.message, holdMs);
 
       // 播放音频
-      if (anim.audio) {
-        const audio = new Audio(anim.audio);
-        audio.play().catch(() => {
-          // 忽略音频播放错误
-        });
-      }
+        const audio = new Audio(anim.audio);  
+        audio.play().catch(error => {
+        console.error('播放失败，需要等待用户点击后重新播放', error);
+      });
+    
+   
 
-      if (key !== 'idle') {
-        if (restoreTimer) clearTimeout(restoreTimer);
-        restoreTimer = setTimeout(() => {
-          switchAnimation('idle', 0);
-        }, holdMs);
-      }
+      // 自动切换动画
+      // if (key !== 'idle') {
+      //   if (restoreTimer) clearTimeout(restoreTimer);
+      //   restoreTimer = setTimeout(() => {
+      //     switchAnimation('idle', 0);
+      //   }, holdMs);
+      // }
     }
 
-    // 随机播放动画
     function playRandomAnimation() {
-      // 排除 idle 状态，只从其他动画中随机选择
-      const availableAnimations = animations.filter(a => a.key !== 'idle');
-      if (availableAnimations.length === 0) return;
+      const nonIdleAnimations = animations.filter(a => a.key !== 'idle');
+      const randomIndex = Math.floor(Math.random() * nonIdleAnimations.length);
+      const randomAnim = nonIdleAnimations[randomIndex];
       
-      const randomIndex = Math.floor(Math.random() * availableAnimations.length);
-      const randomAnim = availableAnimations[randomIndex];
-      switchAnimation(randomAnim.key, 2500);
+      switchAnimation(randomAnim.key);
     }
 
+    function startAutoSwitch() {
+      if (autoSwitchTimer) clearInterval(autoSwitchTimer);
+      
+      autoSwitchTimer = setInterval(() => {
+        playRandomAnimation();
+      }, 5000);
+    }
     
 
     // 位置恢复
@@ -418,7 +418,6 @@
       if (e.target === closeBtn) return;
       
       e.stopPropagation();
-      playRandomAnimation();
     });
 
     // 关闭
@@ -428,7 +427,10 @@
     });
 
     // 初始为待机动画
-    switchAnimation('idle', 0);
+    switchAnimation('idle', 2000);
+    
+    // 启动自动切换
+    startAutoSwitch();
   }
 
   if (document.readyState === 'loading') {

@@ -394,6 +394,73 @@
       dockInner.style.transform = `rotate(-${rotation[side]}deg)`;
     }
 
+    // 添加吸附动画的函数：吸左边，从右边到左边，缓动进去70px，吸上边，从下面到上面，缓动70px,
+    // 吸右边，从左边到右边，缓动进去70px，吸下边，从上面到下面，缓动70px
+    function animateDock(side, edgeX, edgeY, vw, vh) {
+      const DOCK_OFFSET = 50; // 缓动距离
+      let targetX = edgeX;
+      let targetY = edgeY;
+
+      // 根据吸附方向计算最终位置（缓动70px）
+      switch (side) {
+        case 'left':
+          // 吸左边：从右边到左边，缓动进去70px
+          targetX = -DOCK_OFFSET;
+          break;
+        case 'top':
+          // 吸上边：从下面到上面，缓动70px
+          targetY = edgeY - DOCK_OFFSET;
+          break;
+        case 'right':
+          // 吸右边：从左边到右边，缓动进去70px
+          targetX = vw - 140 + DOCK_OFFSET;
+          break;
+        case 'bottom':
+          // 吸下边：从上面到下面，缓动70px
+          targetY = vh - 110 + DOCK_OFFSET;
+          break;
+      }
+
+      // 先移动到边缘位置（无动画）
+      container.style.transition = 'none';
+      container.style.left = edgeX + 'px';
+      container.style.top = edgeY + 'px';
+      
+      // 强制重排，确保位置更新
+      container.offsetHeight;
+      
+      // 使用缓动函数进行动画
+      const startX = edgeX;
+      const startY = edgeY;
+      const duration = 400; // 动画时长（毫秒）
+      const startTime = performance.now();
+      
+      function easeOutCubic(t) {
+        return 1 - Math.pow(1 - t, 3);
+      }
+
+      function animate(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = easeOutCubic(progress);
+        
+        const currentX = startX + (targetX - startX) * eased;
+        const currentY = startY + (targetY - startY) * eased;
+        
+        container.style.left = currentX + 'px';
+        container.style.top = currentY + 'px';
+        
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          // 动画完成，恢复transition
+          container.style.transition = '';
+        }
+      }
+      
+      requestAnimationFrame(animate);
+    }
+
 
     function getEventPoint(e) {
       if (e.touches && e.touches[0]) {
@@ -507,6 +574,8 @@
       let finalX = rect.left;
       let finalY = rect.top;
 
+      
+
       if (b.left < MARGINS) {
         // 吸附到左边
         shouldDock = true;
@@ -531,12 +600,13 @@
 
       // 执行吸附或取消吸附
       if (shouldDock) {
-        // 执行吸附
-        container.style.left = finalX + 'px';
-        container.style.top = finalY + 'px';
+        // 执行吸附，使用缓动动画
         isDocked = true;
         dockedSide = newDockedSide;
         container.classList.add('web-pet-docked');
+        updateDockRotation(newDockedSide);
+        // 调用缓动动画函数
+        animateDock(newDockedSide, finalX, finalY, vw, vh);
       } else {
         // 取消吸附
         if (isDocked) {

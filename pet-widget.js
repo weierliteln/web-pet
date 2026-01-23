@@ -172,10 +172,10 @@
     style.textContent = `
       #web-pet-container {
         position: fixed;
-        right: 40px;
-        bottom: 40px;
-        width:180px;
-        height: auto;
+       bottom: 180px;
+       right: 16px;
+        width:128px;
+        height: 128px;
         z-index: 999999;
         user-select: none;
       }
@@ -237,6 +237,7 @@
       /* 对话框 */
       #web-pet-speech {
         position: relative;
+        top: 20px;
         display: inline-block;
         position: relative;
         margin: 0 auto;
@@ -270,15 +271,15 @@
       #web-pet-close {
         position: absolute;
         top: 80px;
-        right: 20px;
-        width: 22px;
-        height: 22px;
+        right: 10px;
+        width: 25px;
+        height: 25px;
         border-radius: 50%;
         border: none;
-        background: rgba(0,0,0,0.6);
-        color: #fff;
-        font-size: 14px;
-        line-height: 22px;
+        background: #d3d3d3;
+        color: #888;
+        font-size: 20px;
+        line-height: 25px;
         text-align: center;
         cursor: pointer;
         box-shadow: 0 4px 10px rgba(0,0,0,0.18);
@@ -462,14 +463,6 @@
           console.log(anim.key,'没有音频');
         }
       }
-    
-      // 自动切换动画
-      // if (key !== 'idle') {
-      //   if (restoreTimer) clearTimeout(restoreTimer);
-      //   restoreTimer = setTimeout(() => {
-      //     switchAnimation('idle', 0);
-      //   }, holdMs);
-      // }
     }
 
     function playRandomAnimation() {
@@ -535,8 +528,7 @@
       dockInner.style.transform = `rotate(-${rotation[side]}deg)`;
     }
 
-    // 添加吸附动画的函数：吸左边，从右边到左边，缓动进去70px，吸上边，从下面到上面，缓动70px,
-    // 吸右边，从左边到右边，缓动进去70px，吸下边，从上面到下面，缓动70px
+    // 添加吸附动画的函数
     function animateDock(side, edgeX, edgeY, vw, vh) {
       const DOCK_OFFSET = 50; // 缓动距离
       let targetX = edgeX;
@@ -662,11 +654,11 @@
       const vh = window.innerHeight;
       const rect = container.getBoundingClientRect();
       const rightScreenEdge = vw - MARGINS;
-      const bottomScreenEdge = vh - MARGINS;
+      const bottomScreenEdge = vh  - MARGINS - 100;
 
       // 限制在边界内（不再保持吸附状态，因为已经在 onDown 中取消了）
       newX = Math.min(Math.max(newX, 0), vw - rect.width);
-      newY = Math.min(Math.max(newY, 0), vh - rect.height);
+      newY = Math.min(Math.max(newY, 0), vh - 100 - rect.height);
 
       container.style.left = newX + 'px';
       container.style.top = newY + 'px';
@@ -706,7 +698,7 @@
       const vw = window.innerWidth;
       const vh = window.innerHeight;
       const rightScreenEdge = vw - MARGINS;
-      const bottomScreenEdge = vh - MARGINS;
+      const bottomScreenEdge = vh - MARGINS - 100;
       const b = container.getBoundingClientRect();
 
       // 检测是否应该吸附（参考 pet.html 的逻辑）
@@ -714,8 +706,6 @@
       let newDockedSide = null;
       let finalX = rect.left;
       let finalY = rect.top;
-
-      
 
       if (b.left < MARGINS) {
         // 吸附到左边

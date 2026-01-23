@@ -21,55 +21,55 @@
     {
       key: 'byOk',
       gif: new URL('./images/比OK.gif', baseUrl).toString(),
-      message: '好呀，给你比个OK~',
+      message: '没问题！',
       audio: new URL('./audio/比OK_1.mp3', baseUrl).toString(),
     },
     {
       key: 'funny',
       gif: new URL('./images/搞怪.gif', baseUrl).toString(),
-      message: '哈哈哈，你真有趣~',
+      message: '哇，你真有趣！',
       audio: new URL('./audio/搞怪_1.mp3', baseUrl).toString(),
     },
     {
       key: 'clap',
       gif: new URL('./images/鼓掌.gif', baseUrl).toString(),
-      message: '掌声响起来~',
+      message: '真棒！',
       audio: new URL('./audio/鼓掌_1.mp3', baseUrl).toString(),
     },
     {
       key: 'heart',
       gif: new URL('./images/比心.gif', baseUrl).toString(),
-      message: '给你比个心~💕',
+      message: '爱你哦！',
       audio: new URL('./audio/比心_1.mp3', baseUrl).toString(),
     },
     {
       key: 'done',
       gif: new URL('./images/搞定.gif', baseUrl).toString(),
-      message: '搞定啦！✨',
+      message: '搞定！',
       audio: new URL('./audio/搞定_1.mp3', baseUrl).toString(),
     },
     {
       key: 'weightlifting',
       gif: new URL('./images/举重.gif', baseUrl).toString(),
-      message: '加油，我可以的！💪',
+      message: '诶！呃啊啊啊！',
       audio: new URL('./audio/举重_1.mp3', baseUrl).toString(),
     },
     {
       key: 'persist',
       gif: new URL('./images/再坚持一下.gif', baseUrl).toString(),
-      message: '再坚持一下！💪',
+      message: '再坚持一下，我看好你！',
       audio: new URL('./audio/再坚持一下_1.mp3', baseUrl).toString(),
     },
     {
       key: 'cheer',
       gif: new URL('./images/加油.gif', baseUrl).toString(),
-      message: '加油加油！🚀',
+      message: '加油！',
       audio: new URL('./audio/加油_1.mp3', baseUrl).toString(),
     },
     {
       key: 'work',
       gif: new URL('./images/努力工作.gif', baseUrl).toString(),
-      message: '努力工作！💼',
+      message: '耶！努力工作！💼',
       audio: new URL('./audio/努力工作_1.mp3', baseUrl).toString(),
     },
     {
@@ -81,49 +81,49 @@
     {
       key: 'greeting',
       gif: new URL('./images/开场白.gif', baseUrl).toString(),
-      message: '你好呀！👋',
+      message: '我是淼淼，快点来找我玩呀！',
       audio: new URL('./audio/开场白_1.mp3', baseUrl).toString(),
     },
     {
       key: 'laugh',
       gif: new URL('./images/开怀大笑.gif', baseUrl).toString(),
-      message: '哈哈哈~😄',
+      message: '哈哈哈！',
       audio: new URL('./audio/开怀大笑_1.mp3', baseUrl).toString(),
     },
     {
       key: 'think',
       gif: new URL('./images/思考.gif', baseUrl).toString(),
-      message: '让我想想...🤔',
+      message: '让我想想...',
       audio: new URL('./audio/思考_1.mp3', baseUrl).toString(),
     },
     {
       key: 'surprise',
       gif: new URL('./images/惊讶.gif', baseUrl).toString(),
-      message: '哇，好惊讶！😲',
+      message: '哦！原来如此！',
       audio: new URL('./audio/惊讶_1.mp3', baseUrl).toString(),
     },
     {
       key: 'dance',
       gif: new URL('./images/我们一起来跳舞吧.gif', baseUrl).toString(),
-      message: '我们一起来跳舞吧！💃',
+      message: '你要和我一起来跳舞吗？',
       audio: new URL('./audio/我们一起来跳舞吧_1.mp3', baseUrl).toString(),
     },
     {
       key: 'idea',
       gif: new URL('./images/我想到了.gif', baseUrl).toString(),
-      message: '我想到了！💡',
+      message: '诶，那我想到了！💡',
       audio: new URL('./audio/我想到了_1.mp3', baseUrl).toString(),
     },
     {
       key: 'excited',
       gif: new URL('./images/手舞足蹈.gif', baseUrl).toString(),
-      message: '太兴奋了！🎉',
-      audio: new URL('./audio/手舞足蹈_1.mp3', baseUrl).toString(), 
+      message: '喔！🎉',
+      audio: new URL('./audio/手舞足蹈_1.mp3', baseUrl).toString(),
     },
     {
       key: 'rest',
       gif: new URL('./images/提醒休息.gif', baseUrl).toString(),
-      message: '该休息一下啦~😴',
+      message: '要不要歇一会儿~',
       audio: new URL('./audio/提醒休息_1.mp3', baseUrl).toString(),
     },
     {
@@ -147,22 +147,22 @@
     {
       key: 'completed',
       gif: new URL('./images/这个搞定了.gif', baseUrl).toString(),
-      message: '这个搞定了！✅',
+      message: '这个搞定了！',
       audio: new URL('./audio/这个搞定了_1.mp3', baseUrl).toString(),
     },
     {
       key: 'progress',
       gif: new URL('./images/进展不错.gif', baseUrl).toString(),
-      message: '进展不错哦！📈',
+      message: '进展不错哦！',
       audio: new URL('./audio/进展不错_1.mp3', baseUrl).toString(),
     },
     {
       key: 'accompany',
       gif: new URL('./images/陪你一会儿.gif', baseUrl).toString(),
-      message: '陪你一会儿~💝',
+      message: '我陪你一会儿~',
       audio: new URL('./audio/陪你一会儿_1.mp3', baseUrl).toString(),
     },
-  ] 
+  ]
 
   function injectStyle() {
     if (document.getElementById('web-pet-style')) return;
@@ -241,7 +241,7 @@
         display: inline-block;
         position: relative;
         margin: 0 auto;
-        max-width: 85%;
+        // max-width: 85%;
         padding: 6px 10px;
         background: rgba(255, 255, 255, 0.95);
         border-radius: 16px;
@@ -278,8 +278,8 @@
         border: none;
         background: #d3d3d3;
         color: #888;
-        font-size: 20px;
-        line-height: 25px;
+        line-height: 0px;
+        font-size: 16px;
         text-align: center;
         cursor: pointer;
         box-shadow: 0 4px 10px rgba(0,0,0,0.18);
@@ -376,7 +376,7 @@
     const img = document.createElement('img');
     img.id = 'web-pet-img';
     img.alt = '网页宠物';
-  
+
     const idleAnim = animations.find(a => a.key === 'idle');
     img.src = idleAnim ? idleAnim.gif : '';
 
@@ -410,6 +410,18 @@
     let restoreTimer = null;
     let messageTimer = null;
     let autoSwitchTimer = null;
+    // 吸附阈值（参考 pet.html）
+    const MARGINS = 4;
+    let isDragging = false;
+    let hasMoved = false;
+    let startX = 0;
+    let startY = 0;
+    let petStartX = 0;
+    let petStartY = 0;
+    let suppressClick = false; // 拖动释放后短暂屏蔽点击
+    let isDocked = false; // 是否已吸附到边缘
+    let dockedSide = null; // 吸附到哪一边：'left', 'top', 'right', 'bottom'
+    let currentAudio = null; // 当前播放的音频对象
 
     function showMessage(text, holdMs) {
       if (!speech) return;
@@ -430,7 +442,7 @@
       // 自动隐藏气泡
       messageTimer = setTimeout(() => {
         speech.style.opacity = '0';
-      }, holdMs+1000);
+      }, holdMs + 1000);
     }
 
     function switchAnimation(key, holdMs = 5000) {
@@ -459,8 +471,8 @@
             console.error('播放失败，需要等待用户点击后重新播放', error);
             currentAudio = null;
           });
-        }else{
-          console.log(anim.key,'没有音频');
+        } else {
+          console.log(anim.key, '没有音频');
         }
       }
     }
@@ -469,51 +481,64 @@
       const nonIdleAnimations = animations.filter(a => a.key !== 'idle');
       const randomIndex = Math.floor(Math.random() * nonIdleAnimations.length);
       const randomAnim = nonIdleAnimations[randomIndex];
-      
+
       switchAnimation(randomAnim.key);
     }
 
     function startAutoSwitch() {
       if (autoSwitchTimer) clearInterval(autoSwitchTimer);
-      
+
       autoSwitchTimer = setInterval(() => {
         playRandomAnimation();
       }, 10000);
     }
-    
+
 
     // 位置恢复
-    // try {
-    //   const savedPos = JSON.parse(localStorage.getItem('web_pet_position') || 'null');
-    //   if (savedPos && typeof savedPos.x === 'number' && typeof savedPos.y === 'number') {
-    //     container.style.left = savedPos.x + 'px';
-    //     container.style.top = savedPos.y + 'px';
-    //     container.style.bottom = 'auto';
-        
-    //     // 恢复吸附状态
-    //     if (savedPos.docked && savedPos.dockedSide) {
-    //       isDocked = true;
-    //       dockedSide = savedPos.dockedSide;
-    //       container.classList.add('web-pet-docked');
-    //     }
-    //   }
-    // } catch (_) {
-    //   // localStorage 失败时忽略
-    // }
+    try {
+      const savedPos = JSON.parse(localStorage.getItem('web_pet_position') || 'null');
+      if (savedPos && typeof savedPos.x === 'number' && typeof savedPos.y === 'number') {
+        // 判断是否吸附
+        if (savedPos.docked && savedPos.dockedSide) {
+          isDocked = true;
+          dockedSide = savedPos.dockedSide;
+          container.classList.add('web-pet-docked');
+          updateDockRotation(savedPos.dockedSide);
 
-    // 吸附阈值（参考 pet.html）
-    const MARGINS = 4;
-    
-    let isDragging = false;
-    let hasMoved = false;
-    let startX = 0;
-    let startY = 0;
-    let petStartX = 0;
-    let petStartY = 0;
-    let suppressClick = false; // 拖动释放后短暂屏蔽点击
-    let isDocked = false; // 是否已吸附到边缘
-    let dockedSide = null; // 吸附到哪一边：'left', 'top', 'right', 'bottom'
-    let currentAudio = null; // 当前播放的音频对象
+          // 按照吸附逻辑定位
+          const vw = window.innerWidth;
+          const vh = window.innerHeight;
+          const DOCK_OFFSET = 50;
+
+          let x = savedPos.x;
+          let y = savedPos.y;
+          switch (savedPos.dockedSide) {
+            case 'left':
+              x = -DOCK_OFFSET;
+              break;
+            case 'top':
+              y = y - DOCK_OFFSET;
+              break;
+            case 'right':
+              x = vw - 140 + DOCK_OFFSET;
+              break;
+            case 'bottom':
+              y = vh - 110 + DOCK_OFFSET;
+              break;
+          }
+          container.style.left = x + 'px';
+          container.style.top = y + 'px';
+          container.style.bottom = 'auto';
+        } else {
+          // 非吸附情况下直接恢复位置
+          container.style.left = savedPos.x + 'px';
+          container.style.top = savedPos.y + 'px';
+          container.style.bottom = 'auto';
+        }
+      }
+    } catch (_) {
+      // localStorage 失败时忽略
+    }
 
     //修改不同位置胶囊的旋转以及里面图片位置和旋转
     function updateDockRotation(side) {
@@ -534,22 +559,18 @@
       let targetX = edgeX;
       let targetY = edgeY;
 
-      // 根据吸附方向计算最终位置（缓动70px）
+      // 根据吸附方向计算最终位置（缓动DOCK_OFFSET）
       switch (side) {
         case 'left':
-          // 吸左边：从右边到左边，缓动进去70px
           targetX = -DOCK_OFFSET;
           break;
         case 'top':
-          // 吸上边：从下面到上面，缓动70px
           targetY = edgeY - DOCK_OFFSET;
           break;
         case 'right':
-          // 吸右边：从左边到右边，缓动进去70px
           targetX = vw - 140 + DOCK_OFFSET;
           break;
         case 'bottom':
-          // 吸下边：从上面到下面，缓动70px
           targetY = vh - 110 + DOCK_OFFSET;
           break;
       }
@@ -558,16 +579,16 @@
       container.style.transition = 'none';
       container.style.left = edgeX + 'px';
       container.style.top = edgeY + 'px';
-      
+
       // 强制重排，确保位置更新
       container.offsetHeight;
-      
+
       // 使用缓动函数进行动画
       const startX = edgeX;
       const startY = edgeY;
       const duration = 400; // 动画时长（毫秒）
       const startTime = performance.now();
-      
+
       function easeOutCubic(t) {
         return 1 - Math.pow(1 - t, 3);
       }
@@ -576,13 +597,13 @@
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
         const eased = easeOutCubic(progress);
-        
+
         const currentX = startX + (targetX - startX) * eased;
         const currentY = startY + (targetY - startY) * eased;
-        
+
         container.style.left = currentX + 'px';
         container.style.top = currentY + 'px';
-        
+
         if (progress < 1) {
           requestAnimationFrame(animate);
         } else {
@@ -590,7 +611,7 @@
           container.style.transition = '';
         }
       }
-      
+
       requestAnimationFrame(animate);
     }
 
@@ -654,7 +675,7 @@
       const vh = window.innerHeight;
       const rect = container.getBoundingClientRect();
       const rightScreenEdge = vw - MARGINS;
-      const bottomScreenEdge = vh  - MARGINS - 100;
+      const bottomScreenEdge = vh - MARGINS - 100;
 
       // 限制在边界内（不再保持吸附状态，因为已经在 onDown 中取消了）
       newX = Math.min(Math.max(newX, 0), vw - rect.width);
@@ -701,7 +722,7 @@
       const bottomScreenEdge = vh - MARGINS - 100;
       const b = container.getBoundingClientRect();
 
-      // 检测是否应该吸附（参考 pet.html 的逻辑）
+      // 检测是否应该吸附
       let shouldDock = false;
       let newDockedSide = null;
       let finalX = rect.left;
@@ -737,7 +758,7 @@
           currentAudio.currentTime = 0;
           currentAudio = null;
         }
-        
+
         // 执行吸附，使用缓动动画
         isDocked = true;
         dockedSide = newDockedSide;
@@ -760,15 +781,15 @@
       // 保存位置
       const finalRect = container.getBoundingClientRect();
       try {
-        // localStorage.setItem(
-        //   'web_pet_position',
-        //   JSON.stringify({ 
-        //     x: finalRect.left, 
-        //     y: finalRect.top,
-        //     docked: isDocked,
-        //     dockedSide: dockedSide
-        //   })
-        // );
+        localStorage.setItem(
+          'web_pet_position',
+          JSON.stringify({
+            x: finalRect.left,
+            y: finalRect.top,
+            docked: isDocked,
+            dockedSide: dockedSide
+          })
+        );
       } catch (_) {
         // 忽略存储失败
       }
@@ -791,7 +812,7 @@
       if (suppressClick) return;
       // 如果点击的是关闭按钮，不触发
       if (e.target === closeBtn) return;
-      
+
       e.stopPropagation();
     });
 
@@ -852,7 +873,7 @@
 
     // 初始为待机动画
     switchAnimation('idle', 2000);
-    
+
     // 启动自动切换
     startAutoSwitch();
   }

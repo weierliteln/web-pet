@@ -35,7 +35,133 @@
       gif: new URL('./images/鼓掌.gif', baseUrl).toString(),
       message: '掌声响起来~',
       audio: new URL('./audio/鼓掌_1.mp3', baseUrl).toString(),
-    }
+    },
+    {
+      key: 'heart',
+      gif: new URL('./images/比心.gif', baseUrl).toString(),
+      message: '给你比个心~💕',
+      audio: new URL('./audio/比心_1.mp3', baseUrl).toString(),
+    },
+    {
+      key: 'done',
+      gif: new URL('./images/搞定.gif', baseUrl).toString(),
+      message: '搞定啦！✨',
+      audio: new URL('./audio/搞定_1.mp3', baseUrl).toString(),
+    },
+    {
+      key: 'weightlifting',
+      gif: new URL('./images/举重.gif', baseUrl).toString(),
+      message: '加油，我可以的！💪',
+      audio: new URL('./audio/举重_1.mp3', baseUrl).toString(),
+    },
+    {
+      key: 'persist',
+      gif: new URL('./images/再坚持一下.gif', baseUrl).toString(),
+      message: '再坚持一下！💪',
+      audio: new URL('./audio/再坚持一下_1.mp3', baseUrl).toString(),
+    },
+    {
+      key: 'cheer',
+      gif: new URL('./images/加油.gif', baseUrl).toString(),
+      message: '加油加油！🚀',
+      audio: new URL('./audio/加油_1.mp3', baseUrl).toString(),
+    },
+    {
+      key: 'work',
+      gif: new URL('./images/努力工作.gif', baseUrl).toString(),
+      message: '努力工作！💼',
+      audio: new URL('./audio/努力工作_1.mp3', baseUrl).toString(),
+    },
+    {
+      key: 'cute',
+      gif: new URL('./images/卖萌.gif', baseUrl).toString(),
+      message: '卖个萌~😊',
+      audio: new URL('./audio/卖萌_1.mp3', baseUrl).toString(),
+    },
+    {
+      key: 'greeting',
+      gif: new URL('./images/开场白.gif', baseUrl).toString(),
+      message: '你好呀！👋',
+      audio: new URL('./audio/开场白_1.mp3', baseUrl).toString(),
+    },
+    {
+      key: 'laugh',
+      gif: new URL('./images/开怀大笑.gif', baseUrl).toString(),
+      message: '哈哈哈~😄',
+      audio: new URL('./audio/开怀大笑_1.mp3', baseUrl).toString(),
+    },
+    {
+      key: 'think',
+      gif: new URL('./images/思考.gif', baseUrl).toString(),
+      message: '让我想想...🤔',
+      audio: new URL('./audio/思考_1.mp3', baseUrl).toString(),
+    },
+    {
+      key: 'surprise',
+      gif: new URL('./images/惊讶.gif', baseUrl).toString(),
+      message: '哇，好惊讶！😲',
+      audio: new URL('./audio/惊讶_1.mp3', baseUrl).toString(),
+    },
+    {
+      key: 'dance',
+      gif: new URL('./images/我们一起来跳舞吧.gif', baseUrl).toString(),
+      message: '我们一起来跳舞吧！💃',
+      audio: new URL('./audio/我们一起来跳舞吧_1.mp3', baseUrl).toString(),
+    },
+    {
+      key: 'idea',
+      gif: new URL('./images/我想到了.gif', baseUrl).toString(),
+      message: '我想到了！💡',
+      audio: new URL('./audio/我想到了_1.mp3', baseUrl).toString(),
+    },
+    {
+      key: 'excited',
+      gif: new URL('./images/手舞足蹈.gif', baseUrl).toString(),
+      message: '太兴奋了！🎉',
+      audio: new URL('./audio/手舞足蹈_1.mp3', baseUrl).toString(), 
+    },
+    {
+      key: 'rest',
+      gif: new URL('./images/提醒休息.gif', baseUrl).toString(),
+      message: '该休息一下啦~😴',
+      audio: new URL('./audio/提醒休息_1.mp3', baseUrl).toString(),
+    },
+    {
+      key: 'celebration',
+      gif: new URL('./images/撒花.gif', baseUrl).toString(),
+      message: '撒花庆祝！🎊',
+      audio: new URL('./audio/撒花_1.mp3', baseUrl).toString(),
+    },
+    {
+      key: 'festival',
+      gif: new URL('./images/节日.gif', baseUrl).toString(),
+      message: '节日快乐！🎈',
+      audio: new URL('./audio/节日_1.mp3', baseUrl).toString(),
+    },
+    {
+      key: 'run',
+      gif: new URL('./images/跑步.gif', baseUrl).toString(),
+      message: '一起跑步吧！🏃',
+      audio: new URL('./audio/跑步_1.mp3', baseUrl).toString(),
+    },
+    {
+      key: 'completed',
+      gif: new URL('./images/这个搞定了.gif', baseUrl).toString(),
+      message: '这个搞定了！✅',
+      audio: new URL('./audio/这个搞定了_1.mp3', baseUrl).toString(),
+    },
+    {
+      key: 'progress',
+      gif: new URL('./images/进展不错.gif', baseUrl).toString(),
+      message: '进展不错哦！📈',
+      audio: new URL('./audio/进展不错_1.mp3', baseUrl).toString(),
+    },
+    {
+      key: 'accompany',
+      gif: new URL('./images/陪你一会儿.gif', baseUrl).toString(),
+      message: '陪你一会儿~💝',
+      audio: new URL('./audio/陪你一会儿_1.mp3', baseUrl).toString(),
+    },
   ] 
 
   function injectStyle() {
@@ -301,9 +427,9 @@
       speech.style.opacity = '1';
 
       // 自动隐藏气泡
-      // messageTimer = setTimeout(() => {
-      //   speech.style.opacity = '0';
-      // }, holdMs);
+      messageTimer = setTimeout(() => {
+        speech.style.opacity = '0';
+      }, holdMs+1000);
     }
 
     function switchAnimation(key, holdMs = 5000) {
@@ -315,14 +441,28 @@
 
       showMessage(anim.message, holdMs);
 
-      // 播放音频
-        const audio = new Audio(anim.audio);  
-        audio.play().catch(error => {
-        console.error('播放失败，需要等待用户点击后重新播放', error);
-      });
-    
-   
+      // 停止之前播放的音频
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        currentAudio = null;
+      }
 
+      // 如果已经吸附，不播放音频
+      if (!isDocked) {
+        // 播放音频（如果有）
+        if (anim.audio) {
+          const audio = new Audio(anim.audio);
+          currentAudio = audio;
+          audio.play().catch(error => {
+            console.error('播放失败，需要等待用户点击后重新播放', error);
+            currentAudio = null;
+          });
+        }else{
+          console.log(anim.key,'没有音频');
+        }
+      }
+    
       // 自动切换动画
       // if (key !== 'idle') {
       //   if (restoreTimer) clearTimeout(restoreTimer);
@@ -345,7 +485,7 @@
       
       autoSwitchTimer = setInterval(() => {
         playRandomAnimation();
-      }, 5000);
+      }, 10000);
     }
     
 
@@ -380,6 +520,7 @@
     let suppressClick = false; // 拖动释放后短暂屏蔽点击
     let isDocked = false; // 是否已吸附到边缘
     let dockedSide = null; // 吸附到哪一边：'left', 'top', 'right', 'bottom'
+    let currentAudio = null; // 当前播放的音频对象
 
     //修改不同位置胶囊的旋转以及里面图片位置和旋转
     function updateDockRotation(side) {
@@ -600,6 +741,13 @@
 
       // 执行吸附或取消吸附
       if (shouldDock) {
+        // 停止当前播放的音频
+        if (currentAudio) {
+          currentAudio.pause();
+          currentAudio.currentTime = 0;
+          currentAudio = null;
+        }
+        
         // 执行吸附，使用缓动动画
         isDocked = true;
         dockedSide = newDockedSide;

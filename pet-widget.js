@@ -172,7 +172,7 @@
     style.textContent = `
       #web-pet-container {
         position: fixed;
-        left: 40px;
+        right: 40px;
         bottom: 40px;
         width:180px;
         height: auto;
@@ -805,10 +805,59 @@
       e.stopPropagation();
     });
 
-    // 关闭
+    // 关闭按钮：改为“靠边吸附”而不是直接消失
     closeBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      container.style.display = 'none';
+
+      // 已经是吸附状态就不用再处理
+      if (isDocked) return;
+
+      const rect = container.getBoundingClientRect();
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const rightScreenEdge = vw - MARGINS;
+      const bottomScreenEdge = vh - MARGINS;
+
+      const b = rect;
+      let newDockedSide = null;
+      let finalX = rect.left;
+      let finalY = rect.top;
+
+      // 计算到四个边的距离，吸附到最近的那个边
+      const distLeft = b.left;
+      const distTop = b.top;
+      const distRight = vw - b.right;
+      const distBottom = vh - b.bottom;
+
+      const minDist = Math.min(distLeft, distTop, distRight, distBottom);
+
+      if (minDist === distLeft) {
+        newDockedSide = 'left';
+        finalX = 0;
+      } else if (minDist === distTop) {
+        newDockedSide = 'top';
+        finalY = 40;
+      } else if (minDist === distRight) {
+        newDockedSide = 'right';
+        finalX = vw - 140;
+      } else {
+        newDockedSide = 'bottom';
+        finalY = vh - 110;
+      }
+
+      // 停止当前播放的音频
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        currentAudio = null;
+      }
+
+      // 执行吸附，使用已有的缓动动画
+      isDocked = true;
+      dockedSide = newDockedSide;
+      container.classList.add('web-pet-docked');
+      updateDockRotation(newDockedSide);
+      animateDock(newDockedSide, finalX, finalY, vw, vh);
     });
 
     // 初始为待机动画
